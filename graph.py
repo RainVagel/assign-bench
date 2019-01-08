@@ -91,9 +91,50 @@ def output_graph(graph):
         json.dump(dictionary, write_file)
 
 
+def dict_to_array(graph_dictionary):
+    graph = []
+    for key in graph_dictionary.keys():
+        id_nr = graph_dictionary[key]["id"]
+        passengers = graph_dictionary[key]["passengers"]
+        adj_list = graph_dictionary[key]["adj_list"]
+        node = Node(id_nr=id_nr)
+        node.passengers = passengers
+        node.adj_list = adj_list
+        graph.append(node)
+    return graph
+
+
+def read_graph(path_file):
+    with open(path_file) as data_file:
+        data_loaded = json.load(data_file)
+    return dict_to_array(data_loaded)
+
+
+def node_amount(vertices, edges):
+    if edges > vertices*(vertices-1)/2:
+        raise ValueError("Number of edges can not exceed nr_vertices(nr_vertices-1)/2")
+    elif edges < vertices - 1:
+        raise ValueError("Number of edges can not be smaller than nr_vertices-1")
+    elif vertices < 2:
+        raise ValueError("Number of vertices can not be less than 2")
+
+
+def validate(vertices, edges):
+    try:
+        node_amount(vertices, edges)
+    except ValueError as e:
+        print("Caught error:", repr(e))
+
+
 def main():
-    temp = generate_graph(5, 10, 20)
-    output_graph(temp)
+    # temp = generate_graph(5, 10, 20)
+    # output_graph(temp)
+    # read_graph("graph.json")
+    # validate(10, 2)
+    # validate(10, 2000)
+    # validate(1,0)
+    # validate(5,5)
+    pass
 
 
 if __name__ == "__main__":
