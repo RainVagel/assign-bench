@@ -27,6 +27,9 @@ class Node:
             return True
         return False
 
+    def remove_passenger(self):
+        self.passengers -= 1
+
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
 
