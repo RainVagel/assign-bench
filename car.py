@@ -1,5 +1,4 @@
 class Car:
-
     """
     :param self.path Queue, which houses tuples of type (node, time)
     :param self.location Current node. If moving between nodes a - b, then it is a.
@@ -8,7 +7,8 @@ class Car:
 
     # Not sure if the self.passenger value should be a Boolean or house the passenger object itself
 
-    def __init__(self, location):
+    def __init__(self, location, new_id):
+        self.id = new_id
         self.location = location
         self.time_till_next = 0
         self.moving_to = None
