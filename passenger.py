@@ -1,6 +1,7 @@
 from random import choice
 from graph import *
 
+# Time interval on how often a passenger is created
 PASSENGER_INTERVAL = 10
 
 
@@ -10,6 +11,7 @@ class Passenger:
         self.location = location
         self.destination = destination
         self.wait_time = wait_time
+        self.on_car = False
 
     def is_at_dest(self):
         if self.location == self.destination:
@@ -37,14 +39,30 @@ def create_passenger(graph, passenger_wait_time):
     return passenger
 
 
+def passenger_generator(graph):
+    global PASSENGER_INTERVAL
+    diam = get_diameter(graph)
+    counter = 0
+    passengers = []
+    # while True is only for testing purpouses. Eventually will be handled by SimulatorManager
+    while True:
+        if counter % PASSENGER_INTERVAL == 0:
+            passengers.append(create_passenger(graph, diam))
+        # After every 100 passengers created, increase the speed at which new passengers are created
+        if len(passengers) % 100 == 0:
+            PASSENGER_INTERVAL -= 1
+        counter += 1
+
+
 def main():
     graph = read_graph("graph.json")
-    passengers = [create_passenger(graph, 10), create_passenger(graph, 10)]
-    for node in graph:
-        if len(node.passengers) > 0:
-            print(node.passengers[0])
-        print(node)
-    print(passengers)
+    passenger_generator(graph)
+    # passengers = [create_passenger(graph, 10), create_passenger(graph, 10)]
+    # for node in graph:
+    #     if len(node.passengers) > 0:
+    #         print(node.passengers[0])
+    #     print(node)
+    # print(passengers)
 
 
 if __name__ == "__main__":
