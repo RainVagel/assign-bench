@@ -151,7 +151,7 @@ def key_value(dictionary):
 """
 
 
-def dijkstra(graph, id_to_node, source, target):
+def dijkstra(graph, id_to_node, source, target=None):
     vertex_set = set()
 
     dist = {}
@@ -175,8 +175,9 @@ def dijkstra(graph, id_to_node, source, target):
             index += 1
         vertex_set.remove(id_to_node[u])
 
-        if u == target.id_nr:
-            return dist, prev
+        if target is not None:
+            if u == target.id_nr:
+                return dist, prev
 
         # Neighbour is array [neighbour_id, dist_to_neighbour]
         for neighbour in id_to_node[u].adj_list:
@@ -216,7 +217,7 @@ def node_to_node_id(graph):
 
 
 def path_to_target(paths, target):
-    path = paths[target.id_nr]
+    path = paths[target.id_nr].copy()
     path.remove(path[0])
     path.append(target.id_nr)
     return path
@@ -230,6 +231,7 @@ def generate_nn_matrix(graph):
             temp.append(node)
         dist.append(temp)
     return dist
+
 
 # Returns list of tuples with elements (u_id, v_id, weight) which is the edge from u to v and with edge weight
 def get_edges(graph):
