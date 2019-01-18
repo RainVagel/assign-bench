@@ -39,7 +39,7 @@ class Car:
 
     def set_moving_to(self, dest):
         self.moving_to = dest
-    
+
     def movement(self):
         if self.time_till_next == 0 and self.path is None:
             pass
