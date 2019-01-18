@@ -1,11 +1,13 @@
 import random
 import json
+import numpy as np
 
 
 class Node:
     def __init__(self, id_nr):
         self.id_nr = id_nr
         self.passengers = 0
+        # adj list consists of arrays [neighbour_id, dist_to_neighbour]
         self.adj_list = []
 
     def has_passengers(self):
@@ -129,15 +131,101 @@ def validate(vertices, edges):
         print("Caught error:", repr(e))
 
 
+def key_value(dictionary):
+    keys = list(dictionary.keys())
+    values = list(dictionary.values())
+    index = 0
+    final_array = []
+    while index < len(keys):
+        final_array.append((keys[index], values[index]))
+        index += 1
+    return final_array
+
+
+"""
+:param source - Node, where the taxi is
+:param id_to_node - ID to node dictionary
+:target - Node, where the passenger is
+"""
+
+
+def dijkstra(graph, id_to_node, source, target):
+    vertex_set = set()
+
+    dist = {}
+    prev = {}
+
+    for node in graph:
+        dist[node.id_nr] = np.inf
+        prev[node.id_nr] = []
+        vertex_set.add(node)
+
+    dist[source.id_nr] = 0
+
+    while vertex_set:
+        key_value_array = key_value(dist)
+        # u is Node
+        key_value_array = sorted(key_value_array, key=lambda t: t[1])
+        u = key_value_array[0][0]
+        index = 1
+        while id_to_node[u] not in vertex_set:
+            u = key_value_array[index][0]
+            index += 1
+        vertex_set.remove(id_to_node[u])
+
+        if u == target.id_nr:
+            return dist, prev
+
+        # Neighbour is array [neighbour_id, dist_to_neighbour]
+        for neighbour in id_to_node[u].adj_list:
+            if id_to_node[neighbour[0]] in vertex_set:
+                alt = dist[u] + neighbour[1]
+                if alt < dist[neighbour[0]]:
+                    dist[neighbour[0]] = alt
+                    prev[neighbour[0]].append(u)
+
+    return dist, prev
+
+
+"""
+:param graph - Array of graph nodes.
+:returns dictionary - Keys node_id, values nodes
+"""
+
+
+def node_id_to_node(graph):
+    graph_dict = {}
+    for node in graph:
+        graph_dict[node.id_nr] = node
+    return graph_dict
+
+
+def node_to_node_id(graph):
+    graph_dict = {}
+    for node in graph:
+        graph_dict[node] = node.id_nr
+    return graph_dict
+
+
+"""
+:param target - Node
+:param paths - Dictionary with all the path
+"""
+
+
+def path_to_target(paths, target):
+    path = paths[target.id_nr]
+    path.remove(path[0])
+    path.append(target.id_nr)
+    return path
+
+
 def main():
     # temp = generate_graph(5, 10, 20)
-    # output_graph(temp)
-    # read_graph("graph.json")
-    # validate(10, 2)
-    # validate(10, 2000)
-    # validate(1,0)
-    # validate(5,5)
-    pass
+    graph = read_graph("graph.json")
+    node_id_node = node_id_to_node(graph)
+    id_node = node_to_node_id(graph)
+    dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])
 
 
 if __name__ == "__main__":
