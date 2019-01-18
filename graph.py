@@ -6,17 +6,19 @@ import numpy as np
 class Node:
     def __init__(self, id_nr):
         self.id_nr = id_nr
-        self.passengers = 0
+        # Array of passenger objects
+        self.passengers = []
         # adj list consists of arrays [neighbour_id, dist_to_neighbour]
         self.adj_list = []
 
+    def add_passenger(self, passenger):
+        print(self.passengers)
+        self.passengers.append(passenger)
+
     def has_passengers(self):
-        if self.passengers > 0:
+        if len(self.passengers) > 0:
             return True
         return False
-
-    def create_passenger(self):
-        self.passengers += 1
 
     def add_edge(self, other, weight):
         self.adj_list.append((other, weight))
@@ -29,11 +31,11 @@ class Node:
             return True
         return False
 
-    def remove_passenger(self):
-        self.passengers -= 1
-
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
+
+    def __repr__(self) -> str:
+        return str(self.id_nr)
 
 
 def count_edges(graph):
@@ -220,12 +222,62 @@ def path_to_target(paths, target):
     return path
 
 
+def generate_nn_matrix(graph):
+    dist = []
+    for node in graph:
+        temp = []
+        for node in graph:
+            temp.append(node)
+        dist.append(temp)
+    return dist
+
+# Returns list of tuples with elements (u_id, v_id, weight) which is the edge from u to v and with edge weight
+def get_edges(graph):
+    edges = []
+    for node in graph:
+        for neighbour in node.adj_list:
+            edges.append((node.id_nr, neighbour[0], neighbour[1]))
+    return edges
+
+
+def floyd_warshall(graph):
+    # Generate the dist matrix with inf elements
+    dist = []
+    for node in graph:
+        temp = []
+        for node in graph:
+            temp.append(np.inf)
+        dist.append(temp)
+
+    for edge in get_edges(graph):
+        dist[edge[0]][edge[1]] = edge[2]
+
+    for node in graph:
+        dist[node.id_nr][node.id_nr] = 0
+
+    for k in range(0, len(graph)):
+        for i in range(0, len(graph)):
+            for j in range(0, len(graph)):
+                if dist[i][j] > dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    return dist
+
+
+def get_diameter(graph):
+    distances = floyd_warshall(graph)
+    maximum = 0
+    for row in distances:
+        maximum = max(maximum, max(row))
+    return maximum
+
+
 def main():
     # temp = generate_graph(5, 10, 20)
     graph = read_graph("graph.json")
-    node_id_node = node_id_to_node(graph)
-    id_node = node_to_node_id(graph)
-    dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])
+    # print(get_diameter(graph))
+    # node_id_node = node_id_to_node(graph)
+    # id_node = node_to_node_id(graph)
+    # dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])
 
 
 if __name__ == "__main__":
