@@ -30,6 +30,7 @@ class Car:
         elif self.time_till_next == 0 and self.path is not None:
             if len(self.path) != 0:
                 next_node = self.path.pop()
+                print(next_node)
                 self.set_time(next_node[1])
                 self.set_moving_to(next_node[0])
             else:
