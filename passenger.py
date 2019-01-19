@@ -7,9 +7,10 @@ PASSENGER_INTERVAL = 10
 
 class Passenger:
 
-    def __init__(self, id, location, destination, wait_time):
+    def __init__(self, id, starting_location, destination, wait_time):
         self.id = id
-        self.location = location
+        self.starting_location = starting_location
+        self.location = starting_location
         self.destination = destination
         self.wait_time = wait_time
         self.on_car = False
@@ -18,6 +19,15 @@ class Passenger:
         if self.location == self.destination:
             return True
         return False
+    
+    def set_location(self, node):
+        self.location = node
+    
+    def set_on_car(self, boolean):
+        self.on_car = boolean
+    
+    def __set_node__(self, node_ids):
+        return node_ids[self.location]
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
