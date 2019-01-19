@@ -1,6 +1,7 @@
 from graph import dijkstra, node_id_to_node, read_graph
 from car_generator import CarGenerator
-from passenger import create_passenger
+from passenger import create_passenger, Passenger
+from car import Car
 
 
 class MinCostFlowNetwork:
@@ -34,7 +35,7 @@ class MinCostFlowNetwork:
             else:
                 self.adj_dict[edge[0]].append(edge)
 
-    def populate(self):
+    def __populate(self):
         id_to_node = node_id_to_node(self.graph)
         passenger_ids = [passenger.id for passenger in self.passengers]
         # For every car I will calculate distances to every node
@@ -79,7 +80,7 @@ class MinCostFlowNetwork:
                             return True
 
     # Will be used to push flow through the network till it has maximum min-cost flow
-    def push(self):
+    def __push(self):
         flows = 0
         while flows < len(self.adj_dict[-1]):
             for source_car in self.adj_dict[-1]:
@@ -95,23 +96,38 @@ class MinCostFlowNetwork:
             print("Goes to")
             print([(x[1], x[2], x[3]) for x in self.adj_dict[key]])
 
+    # Returns array which consists of arrays with elements [car_id, passenger_id]
+    def get_assignment(self):
+        self.__populate()
+        self.__push()
+        assignment = []
+        for key in self.adj_dict.keys():
+            test_car = Car(0, 0)
+            if type(key) == type(test_car):
+                for passenger in self.adj_dict[key]:
+                    # print(passenger)
+                    if passenger[3] == 1:
+                        assignment.append([passenger[0].id, passenger[1].id])
+        return assignment
+
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
 
 
 def try_out():
     graph = read_graph("graph.json")
-    car_generator = CarGenerator(graph, 2)
+    car_generator = CarGenerator(graph)
     passengers = [create_passenger(1, graph, 10), create_passenger(2, graph, 10), create_passenger(3, graph, 10)]
-    car_generator.generate_cars()
+    car_generator.generate_cars(2)
     cars = car_generator.generated_cars
     network = MinCostFlowNetwork(graph, cars, passengers)
-    network.populate()
+    # network.populate()
     # print(network.edges)
     # print(network.adj_dict[-1])
     # print(network.adj_dict)
-    network.push()
-    network.testing_network_printer()
+    # network.push()
+    # network.testing_network_printer()
+    print(network.get_assignment())
 
 
 if __name__ == "__main__":
