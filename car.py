@@ -33,8 +33,10 @@ class Car:
         if self.time_till_next == 0 and self.path is None:
             pass
         elif self.time_till_next == 0 and self.path is not None:
-            # If car is at moving_to node and doesn't have a passenger, then it as the passengers locations and should pick him up
-            if self.moving_to != None and self.picked_up == False and self.moving_to.id_nr == self.passenger.starting_location.id_nr:
+            # If car is at moving_to node and doesn't have a passenger,
+            # then it as the passengers locations and should pick him up
+            if self.moving_to is not None and self.picked_up == False \
+                    and self.moving_to.id_nr == self.passenger.starting_location.id_nr:
                 self.pick_up_passenger()
             if len(self.path) != 0: 
                 if self.moving_to != None: # Updating current location to arrived location
@@ -59,9 +61,9 @@ class Car:
 
         else:
             self.decrease_time()
-        print("Debug, moving to: " + str(self.moving_to) + ", time left: " + str(self.time_till_next))
-        if len(self.path) > 0:
-            print("Debug, path: " + str(list(reversed(self.path))))   
+        # print("Debug, moving to: " + str(self.moving_to) + ", time left: " + str(self.time_till_next))
+        # if len(self.path) > 0:
+        #     print("Debug, path: " + str(list(reversed(self.path))))
     
     def set_path(self, path):
         self.path = list(reversed(path))
@@ -78,7 +80,7 @@ class Car:
             self.pick_up_passenger()
         else:
             _, prev = dijkstra(self.graph, self.node_ids, self.location, passenger.location)
-            path_to_passenger = path_to_target(prev, passenger.location)
+            path_to_passenger = path_to_target(prev, self.node_ids, self.location, passenger.location)
             self.passenger = passenger
             self.set_path(path_to_passenger)
     
@@ -91,13 +93,14 @@ class Car:
         self.location = self.passenger.starting_location
         
         _, prev = dijkstra(self.graph, self.node_ids, self.passenger.starting_location, self.passenger.destination)
-        path_to_destination = path_to_target(prev, self.passenger.destination)
+        path_to_destination = path_to_target(prev, self.node_ids,
+                                             self.passenger.starting_location, self.passenger.destination)
         self.set_path(path_to_destination)
         
         # When picking up, passenger should be removed from node
 #         Missing the necessary methods to find out the path to passengers destination# -*- coding: utf-8 -*- 
         
-    def put_down_passenger(self): # TODO, mõtle, mis siia lisada tahtsid
+    def put_down_passenger(self):
         self.passenger.set_on_car(False)
         self.passenger.location = self.location
     
