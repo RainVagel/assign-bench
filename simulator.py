@@ -9,31 +9,33 @@ id_node = grp.node_to_node_id(graph)
     
     
 car_gen = CarGenerator(graph)
-car_gen.generate_cars(3)
+generated_cars = car_gen.generate_cars(3, node_id_node, graph)
 
 #print(car_gen.generated_cars)
 
 # Generate a car and a passenger
-test_car = car_gen.generate_cars(1)[0]
+test_car = car_gen.generate_cars(1, node_id_node, graph)[0]
 test_passenger = create_passenger(1, graph, 10)
 
 
-while test_car.location == test_passenger.location:
-    test_car = car_gen.generate_cars(1)[0]
+while test_car.location != test_passenger.location:
+    test_car = car_gen.generate_cars(1, node_id_node, graph)[0]
     test_passenger = create_passenger(1, graph, 10)
 
 print(car_gen.generated_cars)
 print(test_passenger)
 
-node_id_node = grp.node_id_to_node(graph)
-id_node = grp.node_to_node_id(graph)
-dist, prev = grp.dijkstra(graph, node_id_node, graph[0], graph[-1])
+dist, prev = grp.dijkstra(graph, node_id_node, test_car.location, test_passenger.location)
+
 
 # Car - go to passenger location
-passenger_location = test_passenger.location.id_nr
-path_to_passenger = prev[passenger_location]
-test_car.set_path(path_to_passenger)
-print(test_car.path)
+#test_car.set_path(path_to_passenger)
+test_car.start_task(test_passenger)
+print(list(reversed(test_car.path)))
 
-test_car.movement(node_id_node)
+test_car.movement()
+# Testi, kui auto ja vend spawnivad samas kohas
 
+def simulate(graph, nr_of_cars, nr_of_passengers):
+    car_generator = CarGenerator(graph)
+    #gene

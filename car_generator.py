@@ -15,17 +15,16 @@ class CarGenerator:
         nodes = []
         for node in self.graph:
             nodes.append(node)
-        self.nodes = nodes
         return nodes
     
     # Generates n new cars. Deletes all previous cars
-    def generate_cars(self, nr):
+    def generate_cars(self, nr, node_ids, graph):
         generated_cars = []
         cars_generated = 0
         while cars_generated < nr:
             new_id = next(self.id_generator)
             random_node = random.choice(self.nodes)
-            new_car = car.Car(random_node, new_id)
+            new_car = car.Car(random_node, new_id, node_ids, graph)
             cars_generated += 1
             generated_cars.append(new_car)
         self.generated_cars = generated_cars
@@ -33,18 +32,19 @@ class CarGenerator:
         return generated_cars
     
     # Generates n new cars, which will be added to existing cars
-    def add_new_cars(self, nr):
+    def add_new_cars(self, nr, node_ids, graph):
         generated_cars = []
         cars_generated = 0
         while cars_generated < nr:
             new_id = next(self.id_generator)
             random_node = random.choice(self.nodes)
-            new_car = car.Car(random_node, new_id)
+            new_car = car.Car(random_node, new_id, node_ids, graph)
             cars_generated += 1
             generated_cars.append(new_car)
         self.generated_cars.extend(generated_cars)
         self.nr_of_cars += cars_generated
         return self.generated_cars
+    
         
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
