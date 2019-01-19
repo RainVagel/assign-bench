@@ -18,7 +18,7 @@ test_car = car_gen.generate_cars(1, node_id_node, graph)[0]
 test_passenger = create_passenger(1, graph, 10)
 
 
-while test_car.location != test_passenger.location:
+while test_car.location == test_passenger.location:
     test_car = car_gen.generate_cars(1, node_id_node, graph)[0]
     test_passenger = create_passenger(1, graph, 10)
 
@@ -27,7 +27,7 @@ print(test_passenger)
 
 dist, prev = grp.dijkstra(graph, node_id_node, test_car.location, test_passenger.location)
 
-
+path_to_destination = grp.path_to_target(prev, test_passenger.location)
 # Car - go to passenger location
 #test_car.set_path(path_to_passenger)
 test_car.start_task(test_passenger)
