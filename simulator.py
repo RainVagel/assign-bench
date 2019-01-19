@@ -4,6 +4,7 @@ from passenger import create_passenger
 import time
 
 PASSENGER_INTERVAL = 10
+DIAMETER_CONSTANT = 1.5
 
 graph = grp.read_graph("graph.json")
 node_id_node = grp.node_id_to_node(graph)
@@ -38,9 +39,8 @@ print(list(reversed(test_car.path)))
 test_car.movement()
 # Testi, kui auto ja vend spawnivad samas kohas
 
-def simulate(input_graph, nr_of_cars, nr_of_passengers):
-    # Replace hard-coded string with input graph
-    graph = grp.read_graph("graph.json")
+def simulate(input_graph, nr_of_cars):
+    graph = grp.read_graph(input_graph)
     node_id_node = grp.node_id_to_node(graph)
     id_node = grp.node_to_node_id(graph)
     
@@ -54,18 +54,18 @@ def simulate(input_graph, nr_of_cars, nr_of_passengers):
     
     free_cars.extend(generated_cars)
     
-    global PASSENGER_INTERVAL
-    diam = grp.get_diameter(graph)
-    counter_passenger = 0
+    global PASSENGER_INTERVAL, DIAMETER_CONSTANT
+    diam = grp.get_diameter(graph) * DIAMETER_CONSTANT
     passenger_id = 0
+    ticker = 0
     # while True is only for testing purpouses. Eventually will be handled by SimulatorManager
-    while True:
-        if counter_passenger % PASSENGER_INTERVAL == 0:
+    while ticker < 10000:
+        if ticker % PASSENGER_INTERVAL == 0:
             waiting_passengers.append(create_passenger(passenger_id, graph, diam))
             passenger_id += 1
         # After every 100 passengers created, increase the speed at which new passengers are created
-        if len(passenger_id) % 100 == 0:
+        if passenger_id % 100 == 0:
             PASSENGER_INTERVAL -= 1
-        counter_passenger += 1
-    
-    #gene
+        
+if __name__=="__main__":
+  simulate("graph.json", 5)
