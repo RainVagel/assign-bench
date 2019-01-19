@@ -4,7 +4,7 @@ from passenger import create_passenger, Passenger
 from car import Car
 
 
-class MinCostFlowNetwork:
+class MinCostFlowPriorityNetwork:
     def __init__(self, graph, cars, passengers):
         # Edges is a list of edges that consists of a tuple (car, passenger, distance, flow_unit)
         self.graph = graph
@@ -154,7 +154,7 @@ def try_out():
                   create_passenger(4, graph, 10)]
     car_generator.generate_cars(2)
     cars = car_generator.generated_cars
-    network = MinCostFlowNetwork(graph, cars, passengers)
+    network = MinCostFlowPriorityNetwork(graph, cars, passengers)
     # network.populate()
     # print(network.edges)
     # print(network.adj_dict[-1])
