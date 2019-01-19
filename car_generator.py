@@ -14,7 +14,8 @@ class CarGenerator:
     def __get_nodes_from_graph__(self):
         nodes = []
         for node in self.graph:
-            nodes.append(node.id_nr)
+            nodes.append(node)
+        self.nodes = nodes
         return nodes
     
     # Generates n new cars. Deletes all previous cars
