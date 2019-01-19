@@ -159,7 +159,7 @@ def dijkstra(graph, id_to_node, source, target=None):
 
     for node in graph:
         dist[node.id_nr] = np.inf
-        prev[node.id_nr] = []
+        prev[node.id_nr] = None
         vertex_set.add(node)
 
     dist[source.id_nr] = 0
@@ -169,7 +169,7 @@ def dijkstra(graph, id_to_node, source, target=None):
         # u is Node
         key_value_array = sorted(key_value_array, key=lambda t: t[1])
         u = key_value_array[0][0]
-        index = 1
+        index = 0
         while id_to_node[u] not in vertex_set:
             u = key_value_array[index][0]
             index += 1
@@ -185,8 +185,8 @@ def dijkstra(graph, id_to_node, source, target=None):
                 alt = dist[u] + neighbour[1]
                 if alt < dist[neighbour[0]]:
                     dist[neighbour[0]] = alt
-                    prev[neighbour[0]].append(u)
-
+                    # prev[neighbour[0]].append(u)
+                    prev[neighbour[0]] = u
     return dist, prev
 
 
@@ -210,17 +210,17 @@ def node_to_node_id(graph):
     return graph_dict
 
 
-"""
-:param target - Node
-:param paths - Dictionary with all the path
-"""
-
-
-def path_to_target(paths, target):
-    path = paths[target.id_nr].copy()
-    path.remove(path[0])
-    path.append(target.id_nr)
-    return path
+def path_to_target(prev, id_to_node, source, target):
+    s = []
+    u = target
+    if prev[u.id_nr] is not None or u == source.id_nr:
+        while u is not None:
+            s.insert(0, u)
+            if prev[u.id_nr] is None:
+                break
+            else:
+                u = id_to_node[prev[u.id_nr]]
+    return [x.id_nr for x in s][1:]
 
 
 def generate_nn_matrix(graph):
@@ -277,9 +277,13 @@ def main():
     # temp = generate_graph(5, 10, 20)
     graph = read_graph("graph.json")
     # print(get_diameter(graph))
-    # node_id_node = node_id_to_node(graph)
+    node_id_node = node_id_to_node(graph)
     # id_node = node_to_node_id(graph)
-    # dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])
+    dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])
+    print(graph)
+    print(dist)
+    print("Prev", prev)
+    print(path_to_target(prev, node_id_node, graph[0], graph[-1]))
 
 
 if __name__ == "__main__":
