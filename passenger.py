@@ -14,6 +14,18 @@ class Passenger:
         self.destination = destination
         self.wait_time = wait_time
         self.on_car = False
+        self.time_waited = 0
+
+    def time_movement(self):
+        if self.on_car is False:
+            self.wait_time -=1
+            self.time_waited += 1
+            if self.wait_time == 0:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def is_at_dest(self):
         if self.location == self.destination:

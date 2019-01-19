@@ -36,6 +36,9 @@ print(list(reversed(test_car.path)))
 test_car.movement()
 # Testi, kui auto ja vend spawnivad samas kohas
 
-def simulate(graph, nr_of_cars, nr_of_passengers):
+
+def simulate(graph, nr_of_cars):
     car_generator = CarGenerator(graph)
-    #gene
+    ticker = 0
+    while ticker < 10000:
+        pass
