@@ -12,7 +12,7 @@ class Node:
         self.adj_list = []
 
     def add_passenger(self, passenger):
-        print(self.passengers)
+        # print(self.passengers)
         self.passengers.append(passenger)
 
     def has_passengers(self):
@@ -274,9 +274,9 @@ def get_diameter(graph):
 
 
 def main():
-    # temp = generate_graph(5, 10, 20)
+    # output_graph(generate_graph(200, 15000, 200))
     graph = read_graph("graph.json")
-    # print(get_diameter(graph))
+    print(get_diameter(graph))
     node_id_node = node_id_to_node(graph)
     # id_node = node_to_node_id(graph)
     dist, prev = dijkstra(graph, node_id_node, graph[0], graph[-1])

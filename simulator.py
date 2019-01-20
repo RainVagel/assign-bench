@@ -2,6 +2,8 @@ import graph as grp
 from car_generator import CarGenerator
 from passenger import create_passenger
 from min_cost_flow import MinCostFlowNetwork
+from min_cost_flow_priority import MinCostFlowPriorityNetwork
+from plot import Plot
 import time
 
 PASSENGER_INTERVAL = 10
@@ -65,7 +67,7 @@ def passenger_deleter(deletion_dict, delete_from_dict):
     return deletion_dict, delete_from_dict
 
 
-def simulate(input_graph, nr_of_cars):
+def simulate(input_graph, nr_of_cars, assignment_algorithm):
     graph = grp.read_graph(input_graph)
     node_id_node = grp.node_id_to_node(graph)
     id_node = grp.node_to_node_id(graph)
@@ -79,6 +81,8 @@ def simulate(input_graph, nr_of_cars):
     passengers_to_delete = {}
     pass_thrown_away = 0
     succ_pass = 0
+    checker = 0
+    car_number = []
 
     avg_wait = []
     passenger_nr_statistics = []
@@ -90,11 +94,15 @@ def simulate(input_graph, nr_of_cars):
     for car in generated_cars:
         free_cars[car.id] = car
     
-    global PASSENGER_INTERVAL, DIAMETER_CONSTANT
+    global PASSENGER_INTERVAL, DIAMETER_CONSTANT, PASSENGER_ID
+    PASSENGER_ID = 0
+    PASSENGER_INTERVAL = 10
+
     diam = grp.get_diameter(graph) * DIAMETER_CONSTANT
     ticker = 0
+    thrown_away_pass_counter = 0
     # while True is only for testing purpouses. Eventually will be handled by SimulatorManager
-    while ticker < 5005:
+    while ticker < 10000:
         waiting_passengers = passenger_generator(graph, ticker, diam, waiting_passengers)
         # print("After passenger creation:", waiting_passengers)
         # print("Passenger nr after creation:", len(waiting_passengers))
@@ -139,56 +147,66 @@ def simulate(input_graph, nr_of_cars):
             if waiting_passengers[passenger_key].time_movement():
                 passengers_to_delete[passenger_key] = waiting_passengers[passenger_key]
                 pass_thrown_away += 1
+                thrown_away_pass_counter += 1
+                if thrown_away_pass_counter == 5:
+                    generated_cars = car_generator.generate_cars(1, node_id_node, graph)
+                    thrown_away_pass_counter = 0
+
+                    for car in generated_cars:
+                        free_cars[car.id] = car
 
         passengers_to_delete, waiting_passengers = passenger_deleter(passengers_to_delete, waiting_passengers)
 
         # Taking down waiting time from passengers who have been assigned to some car. If waiting_time goes 0 or below
         # then they will be removed.
-        for passenger in assigned_passengers.values():
-            if assigned_passengers[passenger.id].time_movement():
-                passengers_to_delete[passenger.id] = passenger
-                pass_thrown_away += 1
+        # for passenger in assigned_passengers.values():
+        #     if assigned_passengers[passenger.id].time_movement():
+        #         passengers_to_delete[passenger.id] = passenger
+        #         pass_thrown_away += 1
 
         # If a passenger's wait time is <0, then remove a passenger from that car and make the
         # car available to be assigned.
-        for car in driving_cars.values():
-            if car.passenger in passengers_to_delete.values():
-                car.path = None
-                car.moving_to = None
-                car.passenger = None
-                car.picked_up = False
-                cars_to_move[car.id] = car
-
-        for car in cars_to_move.values():
-            free_cars[car.id] = car
-            del driving_cars[car.id]
-
-        cars_to_move.clear()
-        passengers_to_delete, assigned_passengers = passenger_deleter(passengers_to_delete, assigned_passengers)
-
+        # for car in driving_cars.values():
+        #     if car.passenger in passengers_to_delete.values():
+        #         car.path = None
+        #         car.moving_to = None
+        #         car.passenger = None
+        #         car.picked_up = False
+        #         cars_to_move[car.id] = car
+        #
+        # for car in cars_to_move.values():
+        #     free_cars[car.id] = car
+        #     del driving_cars[car.id]
+        #
+        # cars_to_move.clear()
+        # passengers_to_delete, assigned_passengers = passenger_deleter(passengers_to_delete, assigned_passengers)
 
         # print("After passengers waited:", waiting_passengers)
         # Collect waiting passengers avg_waiting time if total nr of passengers is divisible by 100
-        if PASSENGER_ID % 10 == 0:
+        if PASSENGER_ID % 100 == 0 and PASSENGER_ID != checker:
             total_time = 0
+            car_number.append(len(driving_cars) + len(free_cars))
+            checker = PASSENGER_ID
             pass_thrown_away_list.append(pass_thrown_away)
+            pass_thrown_away = 0
             for passenger_key in waiting_passengers.keys():
                 total_time += waiting_passengers[passenger_key].time_waited
             for passenger in assigned_passengers.values():
                 total_time += assigned_passengers[passenger.id].time_waited
             passenger_nr_statistics.append(PASSENGER_ID)
-            if len(waiting_passengers.keys()) == 0:
-                avg_wait.append(total_time / (len(waiting_passengers.keys()) + 1))
+            if len(waiting_passengers.keys()) + len(assigned_passengers.keys()) == 0:
+                avg_wait.append(total_time / (len(waiting_passengers.keys()) + len(assigned_passengers.keys()) + 1))
             else:
-                avg_wait.append(total_time / len(waiting_passengers.keys()))
+                avg_wait.append(total_time / (len(waiting_passengers.keys()) + len(assigned_passengers.keys())))
         # print("Statisics time", avg_wait)
         # print("Passenger nr", passenger_nr_statistics)
 
         # Start assignment procedure
         if len(free_cars.keys()) > 0 and len(waiting_passengers) > 0:
             # Create flow network to get assignments for taxis
-            network = MinCostFlowNetwork(graph, free_cars.values(), waiting_passengers.values())
-            assignments = network.get_assignment()
+            # network = MinCostFlowNetwork(graph, free_cars.values(), waiting_passengers.values())
+            assingment_object = assignment_algorithm(graph, list(free_cars.values()), list(waiting_passengers.values()))
+            assignments = assingment_object.get_assignment()
 
             for assignment in assignments:
                 car = free_cars[assignment[0]]  # Car object
@@ -207,13 +225,49 @@ def simulate(input_graph, nr_of_cars):
 
         # time.sleep(5)
         ticker += 1
-    print(avg_wait)
-    print(passenger_nr_statistics)
-    print(PASSENGER_ID)
-    print("Thrown away:", pass_thrown_away)
-    print("Success:", succ_pass)
-    print(pass_thrown_away_list)
+    # print(avg_wait)
+    # print(passenger_nr_statistics)
+    # print(PASSENGER_ID)
+    # print("Thrown away:", pass_thrown_away)
+    # print("Success:", succ_pass)
+    # print(pass_thrown_away_list)
+    # new_wait = []
+    # new_nr_statistics = []
+    # avg_thrown = []
+    # prev = passenger_nr_statistics[0]
+    # temp_time = []
+    # temp_thrown = []
+    # for i in range(0, len(avg_wait)):
+    #     if passenger_nr_statistics[i] != prev:
+    #         new_wait.append(sum(temp_time) / len(temp_time))
+    #         temp_time.clear()
+    #         avg_thrown.append(sum(temp_thrown) / len(temp_thrown))
+    #         temp_thrown.clear()
+    #         new_nr_statistics.append(prev)
+    #         prev = passenger_nr_statistics[i]
+    #     else:
+    #         temp_time.append(avg_wait[i])
+    #         temp_thrown.append(pass_thrown_away_list[i])
+    # new_wait.append(sum(temp_time) / len(temp_time))
+    # avg_thrown.append(sum(temp_thrown) / len(temp_thrown))
+    # new_nr_statistics.append(prev)
+    # print(new_wait)
+    # print(new_nr_statistics)
+    # print(avg_thrown)
+    print("Amount of taxis:", str(len(free_cars) + len(driving_cars)))
+    return avg_wait, passenger_nr_statistics, pass_thrown_away_list
 
 
 if __name__ == "__main__":
-    simulate("graph.json", 5)
+    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph.json", 5, MinCostFlowNetwork)
+    avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior = \
+        simulate("graph.json", 5, MinCostFlowPriorityNetwork)
+    plot = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
+                [pass_thrown_away_list, pass_thrown_away_list_prior])
+    legend = ["Network flow", "Priority network flow"]
+    x_label = "Car nr."
+    y_label = "Passengers gave up"
+    plot.create_line_plot(x_label, y_label, legend, title="Amount of passengers who quitted passengers")
+    plot_2 = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
+                [avg_wait, avg_wait_prior])
+    plot_2.create_line_plot("Car nr.", "Average waiting time", legend, title="Average waiting time passengers")

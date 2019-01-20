@@ -47,7 +47,7 @@ class MinCostFlowPriorityNetwork:
             if edge[1] in self.categories.keys():
                 self.edges.remove(edge)
                 edge = list(edge)
-                edge[2] = edge[2] * self.categories[edge[1]]
+                edge[2] = edge[2] * self.categories[edge[1]] * 1.5
                 edge = tuple(edge)
                 self.edges.append(edge)
 
