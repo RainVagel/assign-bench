@@ -4,7 +4,9 @@ from simulator import start_simulate
 
 @click.group()
 def main():
-    """TODO - lisada siia kirjeldus, mis programm teeb ja stuff
+    """\bAssignify is a tool for benchmarking assignment algorithms. With this tool
+    you can generate your own graphs (command: generate-graph) and run simulations
+    (command: simulate). Further information can be found with command_name --help.
     """
     pass
 
