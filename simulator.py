@@ -149,13 +149,13 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
             if waiting_passengers[passenger_key].time_movement():
                 passengers_to_delete[passenger_key] = waiting_passengers[passenger_key]
                 pass_thrown_away += 1
-                thrown_away_pass_counter += 1
-                if thrown_away_pass_counter == 5:
-                    generated_cars = car_generator.generate_cars(1, node_id_node, graph)
-                    thrown_away_pass_counter = 0
-
-                    for car in generated_cars:
-                        free_cars[car.id] = car
+                # thrown_away_pass_counter += 1
+                # if thrown_away_pass_counter == 5:
+                #     generated_cars = car_generator.generate_cars(1, node_id_node, graph)
+                #     thrown_away_pass_counter = 0
+                #
+                #     for car in generated_cars:
+                #         free_cars[car.id] = car
 
         passengers_to_delete, waiting_passengers = passenger_deleter(passengers_to_delete, waiting_passengers)
 
