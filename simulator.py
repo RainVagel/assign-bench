@@ -147,13 +147,13 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
             if waiting_passengers[passenger_key].time_movement():
                 passengers_to_delete[passenger_key] = waiting_passengers[passenger_key]
                 pass_thrown_away += 1
-                thrown_away_pass_counter += 1
-                if thrown_away_pass_counter == 5:
-                    generated_cars = car_generator.generate_cars(1, node_id_node, graph)
-                    thrown_away_pass_counter = 0
-
-                    for car in generated_cars:
-                        free_cars[car.id] = car
+                # thrown_away_pass_counter += 1
+                # if thrown_away_pass_counter == 5:
+                #     generated_cars = car_generator.generate_cars(1, node_id_node, graph)
+                #     thrown_away_pass_counter = 0
+                #
+                #     for car in generated_cars:
+                #         free_cars[car.id] = car
 
         passengers_to_delete, waiting_passengers = passenger_deleter(passengers_to_delete, waiting_passengers)
 
@@ -259,15 +259,15 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
 
 
 if __name__ == "__main__":
-    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph.json", 5, MinCostFlowNetwork)
+    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph.json", 10, MinCostFlowNetwork)
     avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior = \
-        simulate("graph.json", 5, MinCostFlowPriorityNetwork)
+        simulate("graph.json", 10, MinCostFlowPriorityNetwork)
     plot = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [pass_thrown_away_list, pass_thrown_away_list_prior])
     legend = ["Network flow", "Priority network flow"]
-    x_label = "Car nr."
+    x_label = "Passengers"
     y_label = "Passengers gave up"
-    plot.create_line_plot(x_label, y_label, legend, title="Amount of passengers who quitted passengers")
+    plot.create_line_plot(x_label, y_label, legend, title="Amount of passengers who quitted no cars added")
     plot_2 = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [avg_wait, avg_wait_prior])
-    plot_2.create_line_plot("Car nr.", "Average waiting time", legend, title="Average waiting time passengers")
+    plot_2.create_line_plot("Passengers", "Average waiting time", legend, title="Average waiting time no cars added")
