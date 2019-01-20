@@ -104,7 +104,7 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
     #ticker = 0
     thrown_away_pass_counter = 0
     # while True is only for testing purpouses. Eventually will be handled by SimulatorManager
-    for ticker in tqdm(range(1000)):
+    for ticker in tqdm(range(5000)):
         waiting_passengers = passenger_generator(graph, ticker, diam, waiting_passengers)
         # print("After passenger creation:", waiting_passengers)
         # print("Passenger nr after creation:", len(waiting_passengers))
@@ -185,7 +185,7 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
 
         # print("After passengers waited:", waiting_passengers)
         # Collect waiting passengers avg_waiting time if total nr of passengers is divisible by 100
-        if PASSENGER_ID % 10 == 0 and PASSENGER_ID != checker:
+        if PASSENGER_ID % 100 == 0 and PASSENGER_ID != checker:
             total_time = 0
             car_number.append(len(driving_cars) + len(free_cars))
             checker = PASSENGER_ID
