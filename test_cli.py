@@ -1,5 +1,6 @@
 import click
 from graph import generate_graph as gg, output_graph
+from simulator import start_simulate
 
 @click.group()
 def main():
@@ -11,8 +12,8 @@ def main():
               + "edges and the maximum possible weight of an edge, e.g. "
               + "generate_graph 10 30 50")
 @click.argument('args', nargs=3, type=int)
-@click.option("--output_file", 
-              help='Name of the output file in which the generated graph will be saved.')
+@click.option("--output_file", "-o", 
+              help='Name of the output file without extension in which the generated graph will be saved.')
 
 def generate_graph(args, output_file):
     """\bGenerate your own graph by providing your own number of vertices,
@@ -22,18 +23,52 @@ def generate_graph(args, output_file):
     edges = args[1]
     weight = args[2]
     graph = gg(vertices, edges, weight)
-    #click.echo(graph)
     if output_file:
         output_graph(graph, output_file)
-@main.command(short_help="Run a simulation with an assigned algorithm to find "
-              + "an average waiting time for a passenger, TODO")
+@main.command(short_help="Run a simulation (with a possibility of providing " +
+            "your own graph and algorithm) to find an average waiting time " + 
+            "for a passenger, number of passengers who got tired of waiting " +
+            "for a taxi and much more. Will also give visualizations to " + 
+            "better understand results.")
 @click.argument('args', nargs=2)
-# TODO - lisa option, et lisada enda algoritm, enda graaf, 
-def simulate(args):
-    """\bRun a simulation with an assigned algorithm to find an average 
-    waiting time for a passenger, TODO
+@click.option("--input_file" , "-i", help="Name of the input graph file without " 
+              + "extension to be used to run the algorithms on.")
+@click.option("--algorithm", "-a", help="Name of the input algorithm file "
+              + "without extension. Algorithm must be a class, where __init__() "
+              + "must contain variables graph, number of cars and number of passengers, "
+              +"e.g. __init__(self, graph, cars, passengers).")
+@click.option("--test", "-t", nargs=2)
+def simulate(args, input_file, algorithm, test): # TODO
+    """\bRun a simulation with a given number of passengers (with a possibility
+    of providing your own graph and algorithm) to find an average waiting time
+    for a passenger, number of passengers who got tired of waiting for a taxi 
+    and much more. Will also give visualizations to better understand results. 
+    Examples: simulate 5, simulate 7 -i connected_graph -a hungarian_method
     """
-    click.echo(args)
+    if test:
+        test_time(test[0], test[1])
 
+@main.command()
+@click.argument('args', nargs=1) # TODO lipud algorithmi ja graafi jaoks
+def test_time(args):
+    package = args[0]
+    #name = args[1]
+    
+    #imported = getattr(__import__(package, fromlist=[name]), name)
+#    filename = args[0]
+#    print(filename)
+#    classname = args[1]
+#    from filename import classname
+    graph = 1
+    cars = 2
+    passengers = 3
+#    test_object = classname(graph, cars, passengers)
+#    print(test_object)
+    #print(imported)
+    #test_object = imported(graph, cars, passengers)
+    #print(test_object)
+    # TODO if clause
+    start_simulate(5)
 if __name__ == '__main__':
     main()
+    

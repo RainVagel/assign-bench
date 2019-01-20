@@ -5,6 +5,8 @@ from min_cost_flow import MinCostFlowNetwork
 from min_cost_flow_priority import MinCostFlowPriorityNetwork
 from plot import Plot
 import time
+from tqdm import tqdm
+
 
 PASSENGER_INTERVAL = 10
 DIAMETER_CONSTANT = 1.5
@@ -99,10 +101,10 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
     PASSENGER_INTERVAL = 10
 
     diam = grp.get_diameter(graph) * DIAMETER_CONSTANT
-    ticker = 0
+    #ticker = 0
     thrown_away_pass_counter = 0
     # while True is only for testing purpouses. Eventually will be handled by SimulatorManager
-    while ticker < 10000:
+    for ticker in tqdm(range(1000)):
         waiting_passengers = passenger_generator(graph, ticker, diam, waiting_passengers)
         # print("After passenger creation:", waiting_passengers)
         # print("Passenger nr after creation:", len(waiting_passengers))
@@ -224,7 +226,7 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
         # print("Assigned passengers", assigned_passengers)
 
         # time.sleep(5)
-        ticker += 1
+        #ticker += 1
     # print(avg_wait)
     # print(passenger_nr_statistics)
     # print(PASSENGER_ID)
@@ -257,17 +259,36 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
     print("Amount of taxis:", str(len(free_cars) + len(driving_cars)))
     return avg_wait, passenger_nr_statistics, pass_thrown_away_list
 
+def start_simulate(nr_of_cars, graph="graph", algorithm=MinCostFlowNetwork, algorithm_name="Network Flow"): # TODO
+    if (algorithm == MinCostFlowNetwork):
+        print("true")
+        main()
+    else:
+        avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate(graph, nr_of_cars, algorithm)
+        plot = Plot([passenger_nr_statistics], [pass_thrown_away_list])
+        legend = algorithm_name 
+        x_label = "Nr of cars"
+        y_label = "Nr of cancelled orders"
+        plot.create_line_plot(x_label, y_label, legend, title="Cancelled orders over time")
+        plot_2 = Plot([passenger_nr_statistics], [avg_wait])
+        plot_2.create_line_plot("Nr of cars", "Average waiting time", legend, title="Average waiting time per passenger")
 
-if __name__ == "__main__":
-    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph.json", 5, MinCostFlowNetwork)
-    avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior = \
-        simulate("graph.json", 5, MinCostFlowPriorityNetwork)
+def main():
+    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph", 5, MinCostFlowNetwork)
+    avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior =  simulate("graph", 5, MinCostFlowPriorityNetwork)
+    print(passenger_nr_statistics)
+    print(passenger_nr_statistics_prior)
+    print(pass_thrown_away_list)
+    print(pass_thrown_away_list_prior)
     plot = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [pass_thrown_away_list, pass_thrown_away_list_prior])
     legend = ["Network flow", "Priority network flow"]
-    x_label = "Car nr."
-    y_label = "Passengers gave up"
-    plot.create_line_plot(x_label, y_label, legend, title="Amount of passengers who quitted passengers")
+    x_label = "Nr of cars"
+    y_label = "Nr of cancelled orders"
+    plot.create_line_plot(x_label, y_label, legend, title="Cancelled orders over time")
     plot_2 = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [avg_wait, avg_wait_prior])
-    plot_2.create_line_plot("Car nr.", "Average waiting time", legend, title="Average waiting time passengers")
+    plot_2.create_line_plot("Nr of cars", "Average waiting time", legend, title="Average waiting time per passenger")
+
+if __name__ == "__main__":
+    main()
