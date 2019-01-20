@@ -89,12 +89,13 @@ def generate_graph(vertices, edges, max_weight):
     return random_add_edges(graph, edges, max_weight)
 
 
-def output_graph(graph):
+def output_graph(graph, filename):
     dictionary = {}
     for node in graph:
         dictionary[node.id_nr] = {"id": node.id_nr, "passengers": node.passengers,
                                   "adj_list": node.adj_list}
-    with open("graph.json", "w") as write_file:
+    file = filename + ".json"
+    with open(file, "w") as write_file:
         json.dump(dictionary, write_file)
 
 

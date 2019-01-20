@@ -3,10 +3,17 @@
 import click
 
 
-@click.command() # TODO mõelda, mis käsud meil on mida saab jooksutada
-@click.option('--count', default=1, help='Number of greetings.')
-@click.option('--name', prompt='Your name',
-              help='The person to greet.')
+@click.command("generate-graph") # TODO mõelda, mis käsud meil on mida saab jooksutada
+@click.option("--vertices", help="Number of vertices.")
+@click.option("--edges", help="Number of edges.")
+@click.option("--max_weight", help="Max possible weight of an edge.")
+#@click.option('', help='Number of greetings.')
+#@click.option('--name', prompt='Your name',
+#              help='The person to greet.')
+
+@click.command()
+def cli():
+    click.echo("Hello World")
 
 def run(): # TODO
     pass
@@ -29,3 +36,9 @@ test = Test(15)
 dick = {}
 dick[1] = test
 test.substract(3)
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
