@@ -19,7 +19,7 @@ class Plot:
         plt.ylabel(y_label)
         plt.title(title)
         plt.legend()
-        plt.savefig(save_path + title)
+        plt.savefig(save_path + title.replace(" ", "_"))
         plt.close()
 
 
