@@ -21,7 +21,7 @@ class CarGenerator:
     def generate_cars(self, nr, node_ids, graph):
         generated_cars = []
         cars_generated = 0
-        while cars_generated < nr:
+        while cars_generated < int(nr):
             new_id = next(self.id_generator)
             random_node = random.choice(self.nodes)
             new_car = car.Car(random_node, new_id, node_ids, graph)
