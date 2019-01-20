@@ -85,7 +85,7 @@ class Car:
             self.set_path(path_to_passenger)
     
     def pick_up_passenger(self):
-        print("Picking up passenger")
+        # print("Picking up passenger")
         self.picked_up = True
         self.passenger.set_on_car(True)
         
@@ -108,5 +108,10 @@ class Car:
         return str(self.__class__) + ": " + str(self.__dict__)
     
     def __repr__(self):
-        return self.__str__()
+        if self.moving_to is None:
+            return "ID:" + str(self.id) + " location:" + str(self.location.id_nr) + " moving_to:" + \
+                   str(self.moving_to) + " picked_up:" + str(self.picked_up)
+        else:
+            return "ID:" + str(self.id) + " location:" + str(self.location.id_nr) + " moving_to:" + \
+                str(self.moving_to.id_nr) + " picked_up:" + str(self.picked_up)
 
