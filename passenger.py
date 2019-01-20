@@ -18,9 +18,9 @@ class Passenger:
 
     def time_movement(self):
         if self.on_car is False:
-            self.wait_time -=1
+            self.wait_time -= 1
             self.time_waited += 1
-            if self.wait_time == 0:
+            if self.wait_time <= 0:
                 return True
             else:
                 return False
@@ -45,7 +45,8 @@ class Passenger:
         return str(self.__class__) + ": " + str(self.__dict__)
 
     def __repr__(self) -> str:
-        return self.__str__()
+        return "ID:" + str(self.id) + " start:" + str(self.starting_location.id_nr) + " location:" + \
+               str(self.location.id_nr) + " dest:" + str(self.destination.id_nr) + " car:" + str(self.on_car)
 
 
 def create_passenger(passenger_id, graph, passenger_wait_time):

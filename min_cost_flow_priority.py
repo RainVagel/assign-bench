@@ -71,7 +71,8 @@ class MinCostFlowPriorityNetwork:
             # all cars are connected to every passenger but any two cars are not connected to the exact same
             # passenger node
             for passenger_id in passenger_ids:
-                self.edges.append((car, self.passenger_id_to_passenger[passenger_id], dist[passenger_id], 0))
+                self.edges.append((car, self.passenger_id_to_passenger[passenger_id],
+                                   dist[self.passenger_id_to_passenger[passenger_id].starting_location.id_nr], 0))
         # Add source and sink to network
         # Will also add the category weights to the distances between cars and passengers.
         self.__add_category_weight()
@@ -109,13 +110,12 @@ class MinCostFlowPriorityNetwork:
     # Will be used to push flow through the network till it has maximum min-cost flow
     def __push(self):
         flows = 0
-        while flows < len(self.adj_dict[-1]):
-            for source_car in self.adj_dict[-1]:
-                if source_car[3] == 0:
-                    if self.__push_helper(source_car):
-                        self.__push_modify_edges(source_car)
-                        self.__create_adj_list()
-                        flows += 1
+        for source_car in self.adj_dict[-1]:
+            if source_car[3] == 0:
+                if self.__push_helper(source_car):
+                    self.__push_modify_edges(source_car)
+                    self.__create_adj_list()
+                    flows += 1
 
     def testing_network_printer(self):
         for key in self.adj_dict.keys():
@@ -135,7 +135,7 @@ class MinCostFlowPriorityNetwork:
         self.__push()
         assignment = []
         for key in self.adj_dict.keys():
-            test_car = Car(0, 0)
+            test_car = Car(0, 0, 0, 0)
             if type(key) == type(test_car):
                 for passenger in self.adj_dict[key]:
                     # print(passenger)

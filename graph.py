@@ -35,7 +35,7 @@ class Node:
         return str(self.__class__) + ": " + str(self.__dict__)
 
     def __repr__(self) -> str:
-        return self.__str__()
+        return str(self.id_nr)
 
 
 def count_edges(graph):
