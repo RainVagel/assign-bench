@@ -185,7 +185,7 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
 
         # print("After passengers waited:", waiting_passengers)
         # Collect waiting passengers avg_waiting time if total nr of passengers is divisible by 100
-        if PASSENGER_ID % 100 == 0 and PASSENGER_ID != checker:
+        if PASSENGER_ID % 10 == 0 and PASSENGER_ID != checker:
             total_time = 0
             car_number.append(len(driving_cars) + len(free_cars))
             checker = PASSENGER_ID
@@ -207,6 +207,8 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
         if len(free_cars.keys()) > 0 and len(waiting_passengers) > 0:
             # Create flow network to get assignments for taxis
             # network = MinCostFlowNetwork(graph, free_cars.values(), waiting_passengers.values())
+            #print(graph)
+            #print(assignment_algorithm)
             assingment_object = assignment_algorithm(graph, list(free_cars.values()), list(waiting_passengers.values()))
             assignments = assingment_object.get_assignment()
 
@@ -256,39 +258,40 @@ def simulate(input_graph, nr_of_cars, assignment_algorithm):
     # print(new_wait)
     # print(new_nr_statistics)
     # print(avg_thrown)
-    print("Amount of taxis:", str(len(free_cars) + len(driving_cars)))
+#    print("Amount of taxis:", str(len(free_cars) + len(driving_cars)))
     return avg_wait, passenger_nr_statistics, pass_thrown_away_list
 
 def start_simulate(nr_of_cars, graph="graph", algorithm=MinCostFlowNetwork, algorithm_name="Network Flow"): # TODO
     if (algorithm == MinCostFlowNetwork):
-        print("true")
-        main()
+        main(nr_of_cars)
     else:
+        print("Starting algorithm")
         avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate(graph, nr_of_cars, algorithm)
+        print("Algorithm finished")
         plot = Plot([passenger_nr_statistics], [pass_thrown_away_list])
-        legend = algorithm_name 
-        x_label = "Nr of cars"
+        legend = [algorithm_name,] 
+        x_label = "Nr of passenger"
         y_label = "Nr of cancelled orders"
         plot.create_line_plot(x_label, y_label, legend, title="Cancelled orders over time")
         plot_2 = Plot([passenger_nr_statistics], [avg_wait])
-        plot_2.create_line_plot("Nr of cars", "Average waiting time", legend, title="Average waiting time per passenger")
+        plot_2.create_line_plot("Nr of passenger", "Average waiting time", legend, title="Average waiting time per passenger")
+        print("Plots have been saved to the working directory.")
 
-def main():
-    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph", 5, MinCostFlowNetwork)
-    avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior =  simulate("graph", 5, MinCostFlowPriorityNetwork)
-    print(passenger_nr_statistics)
-    print(passenger_nr_statistics_prior)
-    print(pass_thrown_away_list)
-    print(pass_thrown_away_list_prior)
+def main(nr_of_cars):
+    print("Starting algorithms")
+    avg_wait, passenger_nr_statistics, pass_thrown_away_list = simulate("graph", nr_of_cars, MinCostFlowNetwork)
+    avg_wait_prior, passenger_nr_statistics_prior, pass_thrown_away_list_prior =  simulate("graph", nr_of_cars, MinCostFlowPriorityNetwork)
+    print("Algorithms finished")
     plot = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [pass_thrown_away_list, pass_thrown_away_list_prior])
     legend = ["Network flow", "Priority network flow"]
-    x_label = "Nr of cars"
+    x_label = "Nr of passenger"
     y_label = "Nr of cancelled orders"
     plot.create_line_plot(x_label, y_label, legend, title="Cancelled orders over time")
     plot_2 = Plot([passenger_nr_statistics, passenger_nr_statistics_prior],
                 [avg_wait, avg_wait_prior])
-    plot_2.create_line_plot("Nr of cars", "Average waiting time", legend, title="Average waiting time per passenger")
+    plot_2.create_line_plot("Nr of passenger", "Average waiting time", legend, title="Average waiting time per passenger")
+    print("Plots have been saved to the working directory.")
 
 if __name__ == "__main__":
     main()
