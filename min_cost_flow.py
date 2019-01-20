@@ -46,7 +46,10 @@ class MinCostFlowNetwork:
             # all cars are connected to every passenger but any two cars are not connected to the exact same
             # passenger node
             for passenger_id in passenger_ids:
-                self.edges.append((car, self.passenger_id_to_passenger[passenger_id], dist[passenger_id], 0))
+                print(dist)
+                print(self.passenger_id_to_passenger)
+                self.edges.append((car, self.passenger_id_to_passenger[passenger_id],
+                                   dist[self.passenger_id_to_passenger[passenger_id].starting_location.id_nr], 0))
         # Add source and sink to network
         self.__create_source()
         self.__create_sink()
