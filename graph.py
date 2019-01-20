@@ -89,12 +89,13 @@ def generate_graph(vertices, edges, max_weight):
     return random_add_edges(graph, edges, max_weight)
 
 
-def output_graph(graph):
+def output_graph(graph, filename):
     dictionary = {}
     for node in graph:
         dictionary[node.id_nr] = {"id": node.id_nr, "passengers": node.passengers,
                                   "adj_list": node.adj_list}
-    with open("graph.json", "w") as write_file:
+    file = filename + ".json"
+    with open(file, "w") as write_file:
         json.dump(dictionary, write_file)
 
 
@@ -112,7 +113,8 @@ def dict_to_array(graph_dictionary):
 
 
 def read_graph(path_file):
-    with open(path_file) as data_file:
+    file = path_file + ".json"
+    with open(file) as data_file:
         data_loaded = json.load(data_file)
     return dict_to_array(data_loaded)
 
@@ -275,7 +277,7 @@ def get_diameter(graph):
 
 def main():
     # output_graph(generate_graph(200, 15000, 200))
-    graph = read_graph("graph.json")
+    graph = read_graph("graph")
     print(get_diameter(graph))
     node_id_node = node_id_to_node(graph)
     # id_node = node_to_node_id(graph)
